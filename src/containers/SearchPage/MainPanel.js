@@ -107,8 +107,8 @@ class MainPanel extends Component {
     const isArray = Array.isArray(queryParamNames);
     return isArray
       ? queryParamNames.reduce((acc, paramName) => {
-          return { ...acc, [paramName]: getInitialValue(paramName) };
-        }, {})
+        return { ...acc, [paramName]: getInitialValue(paramName) };
+      }, {})
       : {};
   }
 
@@ -187,12 +187,12 @@ class MainPanel extends Component {
     const isSecondaryFiltersOpen = !!hasSecondaryFilters && this.state.isSecondaryFiltersOpen;
     const propsForSecondaryFiltersToggle = hasSecondaryFilters
       ? {
-          isSecondaryFiltersOpen: this.state.isSecondaryFiltersOpen,
-          toggleSecondaryFiltersOpen: isOpen => {
-            this.setState({ isSecondaryFiltersOpen: isOpen });
-          },
-          selectedSecondaryFiltersCount,
-        }
+        isSecondaryFiltersOpen: this.state.isSecondaryFiltersOpen,
+        toggleSecondaryFiltersOpen: isOpen => {
+          this.setState({ isSecondaryFiltersOpen: isOpen });
+        },
+        selectedSecondaryFiltersCount,
+      }
       : {};
 
     const hasPaginationInfo = !!pagination && pagination.totalItems != null;
@@ -209,9 +209,9 @@ class MainPanel extends Component {
       const mobileClassesMaybe =
         mode === 'mobile'
           ? {
-              rootClassName: css.sortBy,
-              menuLabelRootClassName: css.sortByMenuLabel,
-            }
+            rootClassName: css.sortBy,
+            menuLabelRootClassName: css.sortByMenuLabel,
+          }
           : {};
       return sortConfig.active ? (
         <SortBy
@@ -226,33 +226,44 @@ class MainPanel extends Component {
     };
 
     const classes = classNames(rootClassName || css.searchResultContainer, className);
+    const toggleSwitch = (
+      <div className={css.searchFiltersPrimary}>
+        <label className={css.switch}>
+          <input type="checkbox" />
+          <span className={`${css.slider} ${css.round}`}></span>
+        </label>
+      </div>
+    )
 
     return (
       <div className={classes}>
-        <SearchFiltersPrimary
-          className={css.searchFiltersPrimary}
-          sortByComponent={sortBy('desktop')}
-          listingsAreLoaded={listingsAreLoaded}
-          resultsCount={totalItems}
-          searchInProgress={searchInProgress}
-          searchListingsError={searchListingsError}
-          {...propsForSecondaryFiltersToggle}
-        >
-          {primaryFilters.map(config => {
-            return (
-              <FilterComponent
-                key={`SearchFiltersPrimary.${config.id}`}
-                idPrefix="SearchFiltersPrimary"
-                filterConfig={config}
-                urlQueryParams={urlQueryParams}
-                initialValues={this.initialValues}
-                getHandleChangedValueFn={this.getHandleChangedValueFn}
-                showAsPopup
-                contentPlacementOffset={FILTER_DROPDOWN_OFFSET}
-              />
-            );
-          })}
-        </SearchFiltersPrimary>
+        <div className={css.filterPrimaryContainer}>
+          <SearchFiltersPrimary
+            className={css.searchFiltersPrimary}
+            sortByComponent={sortBy('desktop')}
+            listingsAreLoaded={listingsAreLoaded}
+            resultsCount={totalItems}
+            searchInProgress={searchInProgress}
+            searchListingsError={searchListingsError}
+            {...propsForSecondaryFiltersToggle}
+          >
+            {primaryFilters.map(config => {
+              return (
+                <FilterComponent
+                  key={`SearchFiltersPrimary.${config.id}`}
+                  idPrefix="SearchFiltersPrimary"
+                  filterConfig={config}
+                  urlQueryParams={urlQueryParams}
+                  initialValues={this.initialValues}
+                  getHandleChangedValueFn={this.getHandleChangedValueFn}
+                  showAsPopup
+                  contentPlacementOffset={FILTER_DROPDOWN_OFFSET}
+                />
+              );
+            })}
+          </SearchFiltersPrimary>
+          {toggleSwitch}
+        </div>
         <SearchFiltersMobile
           className={css.searchFiltersMobile}
           urlQueryParams={urlQueryParams}

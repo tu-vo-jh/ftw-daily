@@ -37,6 +37,7 @@ export class SearchPageComponent extends Component {
     this.state = {
       isSearchMapOpenOnMobile: props.tab === 'map',
       isMobileModalOpen: false,
+      isOpenMap: true
     };
 
     this.searchMapListingsInProgress = false;
@@ -44,6 +45,7 @@ export class SearchPageComponent extends Component {
     this.onMapMoveEnd = debounce(this.onMapMoveEnd.bind(this), SEARCH_WITH_MAP_DEBOUNCE);
     this.onOpenMobileModal = this.onOpenMobileModal.bind(this);
     this.onCloseMobileModal = this.onCloseMobileModal.bind(this);
+    this.onToggleSwitch = this.onToggleSwitch.bind(this);
   }
 
   // Callback to determine if new search is needed
@@ -97,6 +99,10 @@ export class SearchPageComponent extends Component {
   // for example when a filter modal is opened in mobile view
   onCloseMobileModal() {
     this.setState({ isMobileModalOpen: false });
+  }
+
+  onToggleSwitch(toggle) {
+    this.setState({ isOpenMap: !toggle });
   }
 
   render() {
@@ -185,8 +191,10 @@ export class SearchPageComponent extends Component {
             searchParamsForPagination={parse(location.search)}
             showAsModalMaxWidth={MODAL_BREAKPOINT}
             history={history}
+            isOpenMap={this.state.isOpenMap}
+            onToggleSwitch={this.onToggleSwitch}
           />
-          <ModalInMobile
+          {this.state.isOpenMap ? (<ModalInMobile
             className={css.mapPanel}
             id="SearchPage.map"
             isModalOpenOnMobile={this.state.isSearchMapOpenOnMobile}
@@ -212,7 +220,7 @@ export class SearchPageComponent extends Component {
                 />
               ) : null}
             </div>
-          </ModalInMobile>
+          </ModalInMobile>) : null}
         </div>
       </Page>
     );

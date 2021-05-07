@@ -231,10 +231,12 @@ const EditListingWizardTab = props => {
       const submitButtonTranslationKey = isNewListingFlow
         ? 'EditListingWizard.saveNewAvailability'
         : 'EditListingWizard.saveEditAvailability';
+      const defaultSeat = 1;
       return (
         <EditListingAvailabilityPanel
           {...panelProps(AVAILABILITY)}
           availability={availability}
+          defaultSeat={defaultSeat}
           submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
           onSubmit={values => {
             onCompleteEditListingWizardTab(tab, values);
@@ -246,7 +248,7 @@ const EditListingWizardTab = props => {
       const submitButtonTranslationKey = isNewListingFlow
         ? 'EditListingWizard.saveNewPhotos'
         : 'EditListingWizard.saveEditPhotos';
-
+      const titleListingPanelKey = "EditListingPhotosPanel.createListingTitle";
       return (
         <EditListingPhotosPanel
           {...panelProps(PHOTOS)}
@@ -258,6 +260,7 @@ const EditListingWizardTab = props => {
             onCompleteEditListingWizardTab(tab, values);
           }}
           onUpdateImageOrder={onUpdateImageOrder}
+          title={titleListingPanelKey}
         />
       );
     }

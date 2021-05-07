@@ -5,7 +5,7 @@ import { Form as FinalForm } from 'react-final-form';
 import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
 import config from '../../config';
-import { LINE_ITEM_NIGHT, LINE_ITEM_DAY, propTypes } from '../../util/types';
+import { LINE_ITEM_NIGHT, LINE_ITEM_DAY, propTypes, LINE_ITEM_HOUR } from '../../util/types';
 import * as validators from '../../util/validators';
 import { formatMoney } from '../../util/currency';
 import { types as sdkTypes } from '../../util/sdkLoader';
@@ -35,12 +35,15 @@ export const EditListingPricingFormComponent = props => (
       const unitType = config.bookingUnitType;
       const isNightly = unitType === LINE_ITEM_NIGHT;
       const isDaily = unitType === LINE_ITEM_DAY;
+      const isHourly = unitType === LINE_ITEM_HOUR;
 
       const translationKey = isNightly
         ? 'EditListingPricingForm.pricePerNight'
         : isDaily
-        ? 'EditListingPricingForm.pricePerDay'
-        : 'EditListingPricingForm.pricePerUnit';
+          ? 'EditListingPricingForm.pricePerDay'
+          : isHourly
+            ? 'EditListingPricingForm.pricePerHour'
+            : 'EditListingPricingForm.pricePerUnit';
 
       const pricePerUnitMessage = intl.formatMessage({
         id: translationKey,

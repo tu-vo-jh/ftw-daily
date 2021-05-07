@@ -15,6 +15,7 @@ const AuthenticationPage = loadable(() => import(/* webpackChunkName: "Authentic
 const CheckoutPage = loadable(() => import(/* webpackChunkName: "CheckoutPage" */ './containers/CheckoutPage/CheckoutPage'));
 const ContactDetailsPage = loadable(() => import(/* webpackChunkName: "ContactDetailsPage" */ './containers/ContactDetailsPage/ContactDetailsPage'));
 const EditListingPage = loadable(() => import(/* webpackChunkName: "EditListingPage" */ './containers/EditListingPage/EditListingPage'));
+const EditTeacherListingPage = loadable(() => import(/* webpackChunkName: "EditTeacherListingPage" */ './containers/EditTeacherListingPage/EditTeacherListingPage'));
 const EmailVerificationPage = loadable(() => import(/* webpackChunkName: "EmailVerificationPage" */ './containers/EmailVerificationPage/EmailVerificationPage'));
 const InboxPage = loadable(() => import(/* webpackChunkName: "InboxPage" */ './containers/InboxPage/InboxPage'));
 const LandingPage = loadable(() => import(/* webpackChunkName: "LandingPage" */ './containers/LandingPage/LandingPage'));
@@ -117,6 +118,31 @@ const routeConfiguration = () => {
       auth: true,
       component: EditListingPage,
       loadData: pageDataLoadingAPI.EditListingPage.loadData,
+    },
+    {
+      path: '/l/newTeacher',
+      name: 'NewTeacherListingPage',
+      auth: true,
+      component: () => (
+        <NamedRedirect
+          name="EditTeacherListingPage"
+          params={{ slug: draftSlug, id: draftId, type: 'new', tab: 'general' }}
+        />
+      ),
+    },
+    {
+      path: '/l/teacher/:slug/:id/:type/:tab',
+      name: 'EditTeacherListingPage',
+      auth: true,
+      component: EditTeacherListingPage,
+      loadData: pageDataLoadingAPI.EditTeacherListingPage.loadData,
+    },
+    {
+      path: '/l/teacher/:slug/:id/:type/:tab/:returnURLType',
+      name: 'EditTeacherListingStripeOnboardingPage',
+      auth: true,
+      component: EditTeacherListingPage,
+      loadData: pageDataLoadingAPI.EditTeacherListingPage.loadData,
     },
     {
       path: '/l/:slug/:id/:type/:tab/:returnURLType',
@@ -331,7 +357,7 @@ const routeConfiguration = () => {
     {
       path: '/reset-password',
       name: 'PasswordResetPage',
-      component: PasswordResetPage ,
+      component: PasswordResetPage,
     },
 
     // Do not change this path!

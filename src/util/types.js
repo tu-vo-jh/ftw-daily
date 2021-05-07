@@ -330,6 +330,7 @@ propTypes.defaultPaymentMethod = shape({
 export const LINE_ITEM_NIGHT = 'line-item/night';
 export const LINE_ITEM_DAY = 'line-item/day';
 export const LINE_ITEM_UNITS = 'line-item/units';
+export const LINE_ITEM_HOUR = 'line-item/hour';
 export const LINE_ITEM_CUSTOMER_COMMISSION = 'line-item/customer-commission';
 export const LINE_ITEM_PROVIDER_COMMISSION = 'line-item/provider-commission';
 
@@ -337,11 +338,12 @@ export const LINE_ITEMS = [
   LINE_ITEM_NIGHT,
   LINE_ITEM_DAY,
   LINE_ITEM_UNITS,
+  LINE_ITEM_HOUR,
   LINE_ITEM_CUSTOMER_COMMISSION,
   LINE_ITEM_PROVIDER_COMMISSION,
 ];
 
-propTypes.bookingUnitType = oneOf([LINE_ITEM_NIGHT, LINE_ITEM_DAY, LINE_ITEM_UNITS]);
+propTypes.bookingUnitType = oneOf([LINE_ITEM_NIGHT, LINE_ITEM_DAY, LINE_ITEM_UNITS, LINE_ITEM_HOUR]);
 
 const requiredLineItemPropType = (props, propName, componentName) => {
   const prop = props[propName];
@@ -471,6 +473,9 @@ const ERROR_CODES = [
   ERROR_CODE_FORBIDDEN,
   ERROR_CODE_MISSING_STRIPE_ACCOUNT,
 ];
+
+export const MAIN_PHOTO_TYPE = 'main';
+export const OTHER_PHOTO_TYPE = 'other';
 
 // API error
 // TODO this is likely to change soonish

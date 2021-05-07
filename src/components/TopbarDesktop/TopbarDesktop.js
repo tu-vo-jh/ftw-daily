@@ -132,6 +132,14 @@ const TopbarDesktop = props => {
     </NamedLink>
   );
 
+  const createTeacherProfileLink = (
+    <NamedLink className={css.createTeacherProfileLink} name="NewTeacherListingPage">
+      <span className={css.createTeacherProfile}>
+        <FormattedMessage id="TopbarDesktop.createTeacherProfile" />
+      </span>
+    </NamedLink>
+  );
+
   return (
     <nav className={classes}>
       <NamedLink className={css.logoLink} name="LandingPage">
@@ -147,6 +155,7 @@ const TopbarDesktop = props => {
           <FormattedMessage id="TopbarDesktop.createListing" />
         </span>
       </NamedLink>
+      {createTeacherProfileLink}
       {inboxLink}
       {profileMenu}
       {signupLink}
