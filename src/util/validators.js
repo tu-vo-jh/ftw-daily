@@ -102,6 +102,16 @@ export const bookingDatesRequired = (inValidStartDateMessage, inValidEndDateMess
   }
 };
 
+export const teacherBookingDatesRequired = (inValidDateMessage) => value => {
+  const dateValid = value && value.date instanceof Date;
+
+  if (!dateValid) {
+    return inValidDateMessage;
+  } else {
+    return VALID;
+  }
+};
+
 // Source: http://www.regular-expressions.info/email.html
 // See the link above for an explanation of the tradeoffs.
 const EMAIL_RE = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;

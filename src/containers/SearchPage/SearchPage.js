@@ -102,7 +102,7 @@ export class SearchPageComponent extends Component {
   }
 
   onToggleSwitch(toggle) {
-    this.setState({ isOpenMap: !toggle });
+    this.setState({ isOpenMap: toggle });
   }
 
   render() {

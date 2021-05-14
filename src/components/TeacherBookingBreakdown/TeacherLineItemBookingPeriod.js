@@ -2,11 +2,10 @@ import React from 'react';
 import { FormattedMessage, FormattedDate } from '../../util/reactIntl';
 import moment from 'moment';
 import { LINE_ITEM_NIGHT, DATE_TYPE_DATE, propTypes } from '../../util/types';
-import { dateFromAPIToLocalNoon } from '../../util/dates';
 
-import css from './BookingBreakdown.module.css';
+import css from './TeacherBookingBreakdown.module.css';
 
-const BookingPeriod = props => {
+const TeacherBookingPeriod = props => {
   const { startDate, endDate, dateType } = props;
 
   const timeFormatOptions =
@@ -56,7 +55,7 @@ const BookingPeriod = props => {
   );
 };
 
-const LineItemBookingPeriod = props => {
+const TeacherLineItemBookingPeriod = props => {
   const { booking, unitType, dateType } = props;
 
   // Attributes: displayStart and displayEnd can be used to differentiate shown time range
@@ -64,8 +63,8 @@ const LineItemBookingPeriod = props => {
   // where there are preparation time needed between bookings.
   // Read more: https://www.sharetribe.com/api-reference/marketplace.html#bookings
   const { start, end, displayStart, displayEnd } = booking.attributes;
-  const localStartDate = dateFromAPIToLocalNoon(displayStart || start);
-  const localEndDateRaw = dateFromAPIToLocalNoon(displayEnd || end);
+  const localStartDate = displayStart || start;
+  const localEndDateRaw = displayEnd || end;
 
   const isNightly = unitType === LINE_ITEM_NIGHT;
   const endDay = isNightly ? localEndDateRaw : moment(localEndDateRaw).subtract(1, 'days');
@@ -73,17 +72,17 @@ const LineItemBookingPeriod = props => {
   return (
     <>
       <div className={css.lineItem}>
-        <BookingPeriod startDate={localStartDate} endDate={endDay} dateType={dateType} />
+        <TeacherBookingPeriod startDate={localStartDate} endDate={endDay} dateType={dateType} />
       </div>
       <hr className={css.totalDivider} />
     </>
   );
 };
-LineItemBookingPeriod.defaultProps = { dateType: null };
+TeacherLineItemBookingPeriod.defaultProps = { dateType: null };
 
-LineItemBookingPeriod.propTypes = {
+TeacherLineItemBookingPeriod.propTypes = {
   booking: propTypes.booking.isRequired,
   dateType: propTypes.dateType,
 };
 
-export default LineItemBookingPeriod;
+export default TeacherLineItemBookingPeriod;

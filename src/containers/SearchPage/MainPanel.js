@@ -168,6 +168,8 @@ class MainPanel extends Component {
       showAsModalMaxWidth,
       filterConfig,
       sortConfig,
+      isOpenMap,
+      onToggleSwitch
     } = this.props;
 
     const primaryFilters = filterConfig.filter(f => f.group === 'primary');
@@ -199,6 +201,10 @@ class MainPanel extends Component {
     const totalItems = searchParamsAreInSync && hasPaginationInfo ? pagination.totalItems : 0;
     const listingsAreLoaded = !searchInProgress && searchParamsAreInSync && hasPaginationInfo;
 
+    const handleChange = (e) => {
+      onToggleSwitch(e.target.checked);
+    }
+
     const sortBy = mode => {
       const conflictingFilterActive = isAnyFilterActive(
         sortConfig.conflictingFilters,
@@ -229,7 +235,7 @@ class MainPanel extends Component {
     const toggleSwitch = (
       <div className={css.searchFiltersPrimary}>
         <label className={css.switch}>
-          <input type="checkbox" />
+          <input type="checkbox" defaultChecked={isOpenMap} onChange={handleChange} />
           <span className={`${css.slider} ${css.round}`}></span>
         </label>
       </div>
@@ -337,6 +343,7 @@ class MainPanel extends Component {
               pagination={listingsAreLoaded ? pagination : null}
               search={searchParamsForPagination}
               setActiveListing={onActivateListing}
+              isOpenMap={isOpenMap}
             />
           </div>
         )}
