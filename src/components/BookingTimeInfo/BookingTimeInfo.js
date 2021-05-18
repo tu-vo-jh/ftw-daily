@@ -11,7 +11,7 @@ import {
   LINE_ITEM_UNITS,
   DATE_TYPE_DATE,
   DATE_TYPE_DATETIME,
-  propTypes,
+  propTypes
 } from '../../util/types';
 
 import css from './BookingTimeInfo.module.css';
@@ -33,8 +33,8 @@ const bookingData = (unitType, tx, isOrder, intl) => {
   const endDate =
     isDaily || isUnits
       ? moment(endDateRaw)
-          .subtract(1, 'days')
-          .toDate()
+        .subtract(1, 'days')
+        .toDate()
       : endDateRaw;
   const bookingEnd = formatDateToText(intl, endDate);
   return { bookingStart, bookingEnd, isSingleDay };

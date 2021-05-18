@@ -118,7 +118,8 @@ const estimatedTransaction = (bookingStart, bookingEnd, lineItems, userRole, ses
             attributes: {
                 start: bookingStart,
                 end: bookingEnd,
-                displayEnd: tempDisplayEnd
+                displayEnd: tempDisplayEnd,
+                displayStart: bookingStart
             },
         },
     };

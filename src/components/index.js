@@ -121,8 +121,9 @@ export { default as BookingBreakdown } from './BookingBreakdown/BookingBreakdown
 export { default as TeacherBookingBreakdown } from './TeacherBookingBreakdown/TeacherBookingBreakdown';
 export { default as BookingDateRangeFilter } from './BookingDateRangeFilter/BookingDateRangeFilter';
 export { default as BookingTimeInfo } from './BookingTimeInfo/BookingTimeInfo';
+export { default as TeacherBookingTimeInfo } from './TeacherBookingTimeInfo/TeacherBookingTimeInfo';
 export { default as BookingPanel } from './BookingPanel/BookingPanel';
-export { default as TeacherBookingPanel } from './TeacherBookingPanel/TeacherBookingPanel'
+export { default as TeacherBookingPanel } from './TeacherBookingPanel/TeacherBookingPanel';
 export { default as Discussion } from './Discussion/Discussion';
 export { default as FilterPlain } from './FilterPlain/FilterPlain';
 export { default as FilterPopup } from './FilterPopup/FilterPopup';
