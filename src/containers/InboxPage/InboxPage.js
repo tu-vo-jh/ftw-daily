@@ -34,6 +34,7 @@ import {
   Footer,
   IconSpinner,
   UserDisplayName,
+  TeacherBookingTimeInfo,
 } from '../../components';
 import { TopbarContainer, NotFoundPage } from '../../containers';
 import config from '../../config';
@@ -67,23 +68,23 @@ export const txState = (intl, tx, type) => {
   } else if (txIsRequested(tx)) {
     const requested = isOrder
       ? {
-          nameClassName: css.nameNotEmphasized,
-          bookingClassName: css.bookingNoActionNeeded,
-          lastTransitionedAtClassName: css.lastTransitionedAtEmphasized,
-          stateClassName: css.stateActionNeeded,
-          state: intl.formatMessage({
-            id: 'InboxPage.stateRequested',
-          }),
-        }
+        nameClassName: css.nameNotEmphasized,
+        bookingClassName: css.bookingNoActionNeeded,
+        lastTransitionedAtClassName: css.lastTransitionedAtEmphasized,
+        stateClassName: css.stateActionNeeded,
+        state: intl.formatMessage({
+          id: 'InboxPage.stateRequested',
+        }),
+      }
       : {
-          nameClassName: css.nameEmphasized,
-          bookingClassName: css.bookingActionNeeded,
-          lastTransitionedAtClassName: css.lastTransitionedAtEmphasized,
-          stateClassName: css.stateActionNeeded,
-          state: intl.formatMessage({
-            id: 'InboxPage.statePending',
-          }),
-        };
+        nameClassName: css.nameEmphasized,
+        bookingClassName: css.bookingActionNeeded,
+        lastTransitionedAtClassName: css.lastTransitionedAtEmphasized,
+        stateClassName: css.stateActionNeeded,
+        state: intl.formatMessage({
+          id: 'InboxPage.statePending',
+        }),
+      };
 
     return requested;
   } else if (txIsPaymentPending(tx)) {
@@ -156,6 +157,7 @@ export const txState = (intl, tx, type) => {
 const BookingInfoMaybe = props => {
   const { bookingClassName, isOrder, intl, tx, unitType } = props;
   const isEnquiry = txIsEnquired(tx);
+  console.log(tx);
 
   if (isEnquiry) {
     return null;
@@ -173,14 +175,24 @@ const BookingInfoMaybe = props => {
 
   return (
     <div className={classNames(css.bookingInfoWrapper, bookingClassName)}>
-      <BookingTimeInfo
-        bookingClassName={bookingClassName}
-        isOrder={isOrder}
-        intl={intl}
-        tx={tx}
-        unitType={unitType}
-        dateType={DATE_TYPE_DATE}
-      />
+      {tx.listing.attributes.publicData.subjects ? (
+        <BookingTimeInfo
+          bookingClassName={bookingClassName}
+          isOrder={isOrder}
+          intl={intl}
+          tx={tx}
+          unitType={unitType}
+          dateType={DATE_TYPE_DATE}
+        />) :
+        (<TeacherBookingTimeInfo
+          bookingClassName={bookingClassName}
+          isOrder={isOrder}
+          intl={intl}
+          tx={tx}
+          unitType={unitType}
+          dateType={DATE_TYPE_DATETIME}
+        />)
+      }
     </div>
   );
 };
