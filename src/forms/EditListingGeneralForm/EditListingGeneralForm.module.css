@@ -52,6 +52,11 @@
     composes: formMargins;
 }
 
+.disableNumber {
+    composes: formMargins;
+    pointer-events: none;
+}
+
 .submitButton {
     margin-top: auto;
     margin-bottom: 24px;

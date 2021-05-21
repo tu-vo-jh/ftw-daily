@@ -12,6 +12,12 @@
   "ActivityFeed.today": "Today",
   "ActivityFeed.transitionAccept": "{ displayName } accepted the booking request.",
   "ActivityFeed.transitionCancel": "The booking was cancelled.",
+  "ActivityFeed.ownTransitionCancelByProvider": "You cancelled the booking.",
+  "ActivityFeed.transitionCancelByProvider": "{ displayName } cancelled the booking.",
+  "ActivityFeed.ownTransitionCancelByCustomer": "You cancelled the booking.",
+  "ActivityFeed.transitionCancelByCustomer": "{ displayName } cancelled the booking.",
+  "ActivityFeed.ownTransitionCancelBeforeAccept": "You cancelled the booking before accept from provider.",
+  "ActivityFeed.transitionCancelBeforeAccept": "{ displayName } cancelled the booking before accept from you.",
   "ActivityFeed.transitionComplete": "The booking was completed. { reviewLink }",
   "ActivityFeed.transitionDecline": "{ displayName } declined the booking request.",
   "ActivityFeed.transitionExpire": "Booking request expired. { displayName } did not reply on time.",
@@ -1024,6 +1030,7 @@
   "TransactionPanel.bookingBreakdownTitle": "Booking breakdown",
   "TransactionPanel.customerBannedStatus": "The user made the request, but was later banned.",
   "TransactionPanel.declineButton": "Decline",
+  "TransactionPanel.cancelBeforeAcceptButton": "Cancel",
   "TransactionPanel.declineSaleFailed": "Oops, declining failed. Please try again.",
   "TransactionPanel.deletedListingOrderTitle": "a listing",
   "TransactionPanel.deletedListingTitle": "Deleted listing",
@@ -1100,5 +1107,6 @@
   "TeacherBookingDatesForm.startTimeLabel": "From",
   "TeacherBookingDatesForm.startTimePlaceholder": "Start time",
   "TeacherBookingDatesForm.endTimeLabel": "To",
-  "TeacherBookingDatesForm.endTimePlaceholder": "End time"
+  "TeacherBookingDatesForm.endTimePlaceholder": "End time",
+  "TeacherBookingBreakdown.commissionFeeNote": "* The fee helps us run the platform and provide the best possible service to you!"
 }

@@ -11,7 +11,8 @@ import {
     LINE_ITEM_UNITS,
     DATE_TYPE_DATE,
     DATE_TYPE_DATETIME,
-    propTypes
+    propTypes,
+    LINE_ITEM_HOUR
 } from '../../util/types';
 
 import css from './TeacherBookingTimeInfo.module.css';
@@ -27,16 +28,12 @@ const bookingData = (unitType, tx, isOrder, intl) => {
     const isDaily = unitType === LINE_ITEM_DAY;
     const isNightly = unitType === LINE_ITEM_NIGHT;
     const isUnits = unitType === LINE_ITEM_UNITS;
+    const isHourly = unitType === LINE_ITEM_HOUR;
 
     const isSingleDay = !isNightly && daysBetween(startDate, endDateRaw) <= 1;
     const bookingStart = formatDateToText(intl, startDate);
     // Shift the exclusive API end date with daily bookings
-    const endDate =
-        isDaily || isUnits
-            ? moment(endDateRaw)
-                .subtract(1, 'days')
-                .toDate()
-            : endDateRaw;
+    const endDate = moment(endDateRaw).subtract(1, 'days').toDate();
     const bookingEnd = formatDateToText(intl, endDate);
     return { bookingStart, bookingEnd, isSingleDay };
 };

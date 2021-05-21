@@ -13,6 +13,7 @@ import {
   txHasBeenDelivered,
   txIsPaymentExpired,
   txIsPaymentPending,
+  txIsCanceledByCustomer
 } from '../../util/transaction';
 import { propTypes, DATE_TYPE_DATE } from '../../util/types';
 import { ensureCurrentUser } from '../../util/data';
@@ -157,7 +158,6 @@ export const txState = (intl, tx, type) => {
 const BookingInfoMaybe = props => {
   const { bookingClassName, isOrder, intl, tx, unitType } = props;
   const isEnquiry = txIsEnquired(tx);
-  console.log(tx);
 
   if (isEnquiry) {
     return null;

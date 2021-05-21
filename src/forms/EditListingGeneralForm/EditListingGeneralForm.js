@@ -159,8 +159,10 @@ const EditListingGeneralFormComponent = props => (
                                 <FieldTextInput
                                     id="numberOfHours"
                                     name="numberOfHours"
-                                    className={css.number}
+                                    className={values.types === 'full' ? css.disableNumber : css.number}
                                     type="number"
+                                    max="8"
+                                    min="1"
                                     defaultValue={values.types === 'full' ? '8' : '1'}
                                     label={numberOfHoursMessage}
                                     placeholder={numberOfHoursPlaceholderMessage}
@@ -169,7 +171,6 @@ const EditListingGeneralFormComponent = props => (
                             )
                         }}
                     </FormSpy>
-
 
                     <Button
                         className={css.submitButton}

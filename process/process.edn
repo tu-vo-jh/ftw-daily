@@ -3,7 +3,7 @@
  [{:name :transition/enquire,
    :actor :actor.role/customer,
    :actions [],
-   :to :state/enquiry}
+   :to :state/check-first-time-booking}
   {:name :transition/request-payment,
    :actor :actor.role/customer,
    :privileged? true,
@@ -21,7 +21,7 @@
      :config {:observe-availability? true}}
     {:name :action/privileged-set-line-items}
     {:name :action/stripe-create-payment-intent}],
-   :from :state/enquiry,
+   :from :state/check-first-time-booking,
    :to :state/pending-payment}
   {:name :transition/expire-payment,
    :at
@@ -68,12 +68,40 @@
     {:name :action/stripe-refund-payment}],
    :from :state/preauthorized,
    :to :state/declined}
+  {:name :transition/cancel-booking-before-accept
+   :actor :actor.role/customer
+   :actions [{:name :action/decline-booking}],
+   :from :state/preauthorized
+   :to :state/cancel-by-customer}
+  {:name :transition/refund-within-48-hours,
+   :at
+   {:fn/ignore-if-past 
+    [{:fn/min
+    [{:fn/plus
+      [{:fn/timepoint [:time/first-entered-state :state/preauthorized]}
+        {:fn/period ["PT48H"]}]}
+      {:fn/plus
+      [{:fn/timepoint [:time/first-entered-state :state/cancel-by-customer]}
+        {:fn/period ["PT1M"]}]}]}]}, 
+   :actions
+   [{:name :action/calculate-full-refund}
+    {:name :action/stripe-refund-payment}],
+   :from :state/cancel-by-customer,
+   :to :state/declined}
+  {:name :transition/no-refund,
+   :at 
+   {:fn/plus
+     [{:fn/timepoint [:time/first-entered-state :state/preauthorized]}
+      {:fn/period ["PT48H"]}]},
+   :actions [],
+   :from :state/cancel-by-customer,
+   :to :state/declined}
   {:name :transition/complete,
    :at {:fn/timepoint [:time/booking-end]},
    :actions [{:name :action/stripe-create-payout}],
    :from :state/accepted,
    :to :state/delivered}
-  {:name :transition/cancel,
+  {:name :transition/cancel-by-operator,
    :actor :actor.role/operator,
    :actions
    [{:name :action/cancel-booking}
@@ -81,6 +109,50 @@
     {:name :action/stripe-refund-payment}],
    :from :state/accepted,
    :to :state/cancelled}
+  {:name :transition/cancel-by-provider,
+   :actor :actor.role/provider,
+   :actions
+   [{:name :action/cancel-booking}
+    {:name :action/calculate-full-refund}
+    {:name :action/stripe-refund-payment}],
+   :from :state/accepted,
+   :to :state/cancelled}
+  {:name :transition/cancel-by-customer,
+   :actor :actor.role/customer,
+   :actions
+   [{:name :action/cancel-booking}],
+   :from :state/accepted,
+   :to :state/cancel-by-customer}
+  {:name :transition/payout-no-reviews,
+   :at 
+   {:fn/ignore-if-past
+   [{:fn/plus
+    [{:fn/timepoint [:time/booking-end]}
+     {:fn/period ["P3D"]}]}]},
+   :actions 
+    [{:name :action/stripe-create-payout}],
+   :from :state/delivered,
+   :to :state/delivered}
+  {:name :transition/payout-with-provider-reviews,
+   :at 
+   {:fn/ignore-if-past
+   [{:fn/plus
+    [{:fn/timepoint [:time/booking-end]}
+     {:fn/period ["P3D"]}]}]},
+   :actions 
+    [{:name :action/stripe-create-payout}],
+   :from :state/reviewed-by-provider,
+   :to :state/reviewed-by-provider}
+  {:name :transition/payout-with-customer-reviews,
+   :at 
+   {:fn/ignore-if-past
+   [{:fn/plus
+    [{:fn/timepoint [:time/booking-end]}
+     {:fn/period ["P3D"]}]}]},
+   :actions 
+    [{:name :action/stripe-create-payout}],
+   :from :state/reviewed-by-customer,
+   :to :state/reviewed-by-customer} 
   {:name :transition/review-1-by-provider,
    :actor :actor.role/provider,
    :actions [{:name :action/post-review-by-provider}],
@@ -125,6 +197,16 @@
     [{:fn/timepoint [:time/booking-end]} {:fn/period ["P7D"]}]},
    :actions [{:name :action/publish-reviews}],
    :from :state/reviewed-by-provider,
+   :to :state/reviewed}
+  {:name :transition/payout-with-all-reviews,
+   :at 
+   {:fn/ignore-if-past
+   [{:fn/plus
+    [{:fn/timepoint [:time/booking-end]}
+     {:fn/period ["P3D"]}]}]},
+   :actions 
+    [{:name :action/stripe-create-payout}],
+   :from :state/reviewed,
    :to :state/reviewed}],
  :notifications
  [{:name :notification/new-booking-request,
