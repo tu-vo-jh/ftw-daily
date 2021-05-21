@@ -588,7 +588,7 @@ export class CheckoutPageComponent extends Component {
     // Show breakdown only when speculated transaction and booking are loaded
     // (i.e. have an id)
     const tx = existingTransaction.booking ? existingTransaction : speculatedTransaction;
-    console.log(tx);
+
     const txBooking = ensureBooking(tx.booking);
     const breakdown =
       tx.id && txBooking.id ? (

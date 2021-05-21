@@ -10,7 +10,7 @@ import {
   isPrivileged,
 } from '../../util/transaction';
 import * as log from '../../util/log';
-import { fetchCurrentUserHasOrdersSuccess, fetchCurrentUser } from '../../ducks/user.duck';
+import { fetchCurrentUserHasOrdersSuccess, fetchCurrentUser, currentUserShowSuccess } from '../../ducks/user.duck';
 
 // ================ Action types ================ //
 
@@ -179,15 +179,15 @@ export const initiateOrder = (orderParams, transactionId) => (dispatch, getState
 
   const bodyParams = isTransition
     ? {
-        id: transactionId,
-        transition,
-        params: orderParams,
-      }
+      id: transactionId,
+      transition,
+      params: orderParams,
+    }
     : {
-        processAlias: config.bookingProcessAlias,
-        transition,
-        params: orderParams,
-      };
+      processAlias: config.bookingProcessAlias,
+      transition,
+      params: orderParams,
+    };
   const queryParams = {
     include: ['booking', 'provider'],
     expand: true,
@@ -212,6 +212,29 @@ export const initiateOrder = (orderParams, transactionId) => (dispatch, getState
     });
     throw e;
   };
+
+  sdk.currentUser
+    .updateProfile(
+      { protectedData: { fistTimeBooking: transactionId ? transactionId.uuid : null } },
+      {
+        expand: true,
+      }
+    )
+    .then(response => {
+      const entities = denormalisedResponseEntities(response);
+      if (entities.length !== 1) {
+        throw new Error('Expected a resource in the sdk.currentUser.updateProfile response');
+      }
+
+      const currentUser = entities[0];
+      dispatch(currentUserShowSuccess(currentUser));
+    })
+    .catch(e => {
+      dispatch(initiateOrderError(storableError(e)));
+      // pass the same error so that the SAVE_CONTACT_DETAILS_SUCCESS
+      // action will not be fired
+      throw e;
+    });
 
   if (isTransition && isPrivilegedTransition) {
     // transition privileged
@@ -252,6 +275,9 @@ export const confirmPayment = orderParams => (dispatch, getState, sdk) => {
     .then(response => {
       const order = response.data.data;
       dispatch(confirmPaymentSuccess(order.id));
+
+
+
       return order;
     })
     .catch(e => {
@@ -321,15 +347,15 @@ export const speculateTransaction = (orderParams, transactionId) => (dispatch, g
 
   const bodyParams = isTransition
     ? {
-        id: transactionId,
-        transition,
-        params,
-      }
+      id: transactionId,
+      transition,
+      params,
+    }
     : {
-        processAlias: config.bookingProcessAlias,
-        transition,
-        params,
-      };
+      processAlias: config.bookingProcessAlias,
+      transition,
+      params,
+    };
 
   const queryParams = {
     include: ['booking', 'provider'],

@@ -186,12 +186,15 @@ export class TransactionPanelComponent extends Component {
       onAcceptSale,
       onDeclineSale,
       onCancelBeforeAccept,
+      onCancelSale,
       acceptInProgress,
       declineInProgress,
       cancelBeforeAcceptInProgress,
+      cancelInProgress,
       acceptSaleError,
       declineSaleError,
       cancelBeforeAcceptError,
+      cancelSaleError,
       onSubmitBookingRequest,
       timeSlots,
       fetchTimeSlotsError,
@@ -350,7 +353,7 @@ export class TransactionPanelComponent extends Component {
     );
 
     const classes = classNames(rootClassName || css.root, className);
-    const buttonsDisabled = cancelBeforeAcceptInProgress;
+    const buttonsDisabled = cancelBeforeAcceptInProgress || cancelInProgress;
     return (
       <div className={classes}>
         <div className={css.container}>
@@ -485,6 +488,21 @@ export class TransactionPanelComponent extends Component {
                         inProgress={cancelBeforeAcceptInProgress}
                         disabled={buttonsDisabled}
                         onClick={() => onCancelBeforeAccept(currentTransaction.id)}
+                      >
+                        <FormattedMessage id="TransactionPanel.cancelBeforeAcceptButton" />
+                      </SecondaryButton>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+              {stateData.showCancelButton ? (
+                <div className={css.desktopActionButtons}>
+                  <div className={css.actionButtons}>
+                    <div className={css.actionButtonWrapper}>
+                      <SecondaryButton
+                        inProgress={cancelInProgress}
+                        disabled={buttonsDisabled}
+                        onClick={() => onCancelSale(currentTransaction.id, isCustomer)}
                       >
                         <FormattedMessage id="TransactionPanel.cancelBeforeAcceptButton" />
                       </SecondaryButton>

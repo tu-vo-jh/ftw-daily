@@ -12,7 +12,9 @@ import {
   txIsInFirstReviewBy,
   TRANSITION_ACCEPT,
   TRANSITION_DECLINE,
-  TRANSITION_CANCEL_BOOKING_BEFORE_ACCEPT
+  TRANSITION_CANCEL_BOOKING_BEFORE_ACCEPT,
+  TRANSITION_CANCEL_BY_PROVIDER,
+  TRANSITION_CANCEL_BY_CUSTOMER,
 } from '../../util/transaction';
 import { transactionLineItems } from '../../util/api';
 import * as log from '../../util/log';
@@ -53,6 +55,10 @@ export const CANCEL_BEFORE_ACCEPT_REQUEST = 'app/TransactionPage/CANCEL_BEFORE_A
 export const CANCEL_BEFORE_ACCEPT_SUCCESS = 'app/TransactionPage/CANCEL_BEFORE_ACCEPT_SUCCESS';
 export const CANCEL_BEFORE_ACCEPT_ERROR = 'app/TransactionPage/CANCEL_BEFORE_ACCEPT_ERROR';
 
+export const CANCEL_SALE_REQUEST = 'app/TransactionPage/CANCEL_SALE_REQUEST';
+export const CANCEL_SALE_SUCCESS = 'app/TransactionPageCANCELE_SALE_SUCCESS';
+export const CANCEL_SALE_ERROR = 'app/TransactionPage/CANCEL_SALE_ERROR';
+
 export const FETCH_MESSAGES_REQUEST = 'app/TransactionPage/FETCH_MESSAGES_REQUEST';
 export const FETCH_MESSAGES_SUCCESS = 'app/TransactionPage/FETCH_MESSAGES_SUCCESS';
 export const FETCH_MESSAGES_ERROR = 'app/TransactionPage/FETCH_MESSAGES_ERROR';
@@ -85,6 +91,8 @@ const initialState = {
   declineSaleError: null,
   cancelBeforeAcceptInProgress: false,
   cancelBeforeAcceptError: null,
+  cancelInProgress: false,
+  cancelSaleError: null,
   fetchMessagesInProgress: false,
   fetchMessagesError: null,
   totalMessages: 0,
@@ -160,6 +168,13 @@ export default function checkoutPageReducer(state = initialState, action = {}) {
       return { ...state, cancelBeforeAcceptInProgress: false };
     case CANCEL_BEFORE_ACCEPT_ERROR:
       return { ...state, cancelBeforeAcceptInProgress: false, cancelBeforeAcceptError: payload };
+
+    case CANCEL_SALE_REQUEST:
+      return { ...state, cancelInProgress: true, declineSaleError: null, acceptSaleError: null, cancelSaleError: null, cancelBeforeAcceptError: null };
+    case CANCEL_SALE_SUCCESS:
+      return { ...state, cancelInProgress: false };
+    case CANCEL_SALE_ERROR:
+      return { ...state, cancelInProgress: false, cancelSaleError: payload };
 
     case FETCH_MESSAGES_REQUEST:
       return { ...state, fetchMessagesInProgress: true, fetchMessagesError: null };
@@ -255,6 +270,10 @@ const declineSaleError = e => ({ type: DECLINE_SALE_ERROR, error: true, payload:
 const cancelBeforeAcceptRequest = () => ({ type: CANCEL_BEFORE_ACCEPT_REQUEST });
 const cancelBeforeAcceptSuccess = () => ({ type: CANCEL_BEFORE_ACCEPT_SUCCESS });
 const cancelBeforeAcceptError = e => ({ type: CANCEL_BEFORE_ACCEPT_ERROR, error: true, payload: e });
+
+const cancelSaleRequest = () => ({ type: CANCEL_SALE_REQUEST });
+const cancelSaleSuccess = () => ({ type: CANCEL_SALE_SUCCESS });
+const cancelSaleError = e => ({ type: CANCEL_SALE_ERROR, error: true, payload: e });
 
 const fetchMessagesRequest = () => ({ type: FETCH_MESSAGES_REQUEST });
 const fetchMessagesSuccess = (messages, pagination) => ({
@@ -434,6 +453,31 @@ export const cancelBeforeAccept = id => (dispatch, getState, sdk) => {
       log.error(e, 'cancel-before-accept-failed', {
         txId: id,
         transition: TRANSITION_CANCEL_BOOKING_BEFORE_ACCEPT,
+      });
+      throw e;
+    });
+}
+
+export const cancelSale = (id, isCustomer) => (dispatch, getState, sdk) => {
+  const curState = getState();
+  if (curState.TransactionPage.cancelInProgress) {
+    return Promise.reject(new Error('Transaction already in progress'));
+  }
+  dispatch(cancelSaleRequest());
+
+  return sdk.transactions
+    .transition({ id, transition: isCustomer ? TRANSITION_CANCEL_BY_CUSTOMER : TRANSITION_CANCEL_BY_PROVIDER, params: {} }, { expand: true })
+    .then(response => {
+      dispatch(addMarketplaceEntities(response));
+      dispatch(cancelSaleSuccess());
+      dispatch(fetchCurrentUserNotifications());
+      return response;
+    })
+    .catch(e => {
+      dispatch(cancelSaleError(storableError(e)));
+      log.error(e, 'cancel-sale-failed', {
+        txId: id,
+        transition: isCustomer ? TRANSITION_CANCEL_BY_CUSTOMER : TRANSITION_CANCEL_BY_PROVIDER,
       });
       throw e;
     });
