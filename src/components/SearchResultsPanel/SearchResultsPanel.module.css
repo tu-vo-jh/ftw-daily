@@ -40,6 +40,11 @@
     margin-right: 24px;
   }
 
+  @media (--viewportMLarge) {
+    flex-basis: calc(33% - 16px);
+    margin-right: 24px;
+  }
+
   @media (--viewportXLarge) {
     /**
      * resultPanelWidthRatio = 0.625 aka 62.5%
@@ -47,7 +52,7 @@
       resultPanel: 62.5vw from 1920px = 1200px
       panelPaddings: - 2*36px = 72px
 
-      columnCount: 3
+      columnCount: 5
       guttersBetweenColumns: 2*24px = 48px
 
       (resultPanel - (panelPaddings + guttersBetweenColumns)) / columnCount = listingCardWidth
@@ -56,7 +61,56 @@
      * flex-basis: calc((100%/columnCount) - (guttersBetweenColumns / columnCount))
      */
 
-    flex-basis: calc(33.33% - 16px);
+    flex-basis: calc(20% - 9.6px);
+    margin-right: 24px;
+  }
+}
+
+.listingCardWithoutMap {
+  margin-bottom: 36px;
+  flex-basis: 100%;
+
+  @media (--viewportLarge) {
+    /**
+      * resultPanelWidthRatio = 0.625 aka 62.5%
+
+      resultPanel: 62.5vw from 1024px = 640px
+      panelPaddings: - 2*36px = 72px
+
+      columnCount: 4
+      guttersBetweenColumns: 24px
+
+      (resultPanel - (panelPaddings + guttersBetweenColumns)) / columnCount = listingCardWidth
+      ergo => listingCardWidth: 272px
+
+    * flex-basis: calc((100%/columnCount) - (guttersBetweenColumns / columnCount))
+    */
+    flex-basis: calc(25% - 6px);
+    margin-right: 24px;
+  }
+
+  @media (--viewportMLarge) {
+    flex-basis: calc(20% - 24.6px);
+    margin-right: 24px;
+  }
+
+  @media (--viewportXLarge) {
+    /**
+     * resultPanelWidthRatio = 0.625 aka 62.5%
+
+      resultPanel: 62.5vw from 1920px = 1200px
+      panelPaddings: - 2*36px = 72px
+
+      columnCount: 5
+      guttersBetweenColumns: 2*24px = 48px
+
+      (resultPanel - (panelPaddings + guttersBetweenColumns)) / columnCount = listingCardWidth
+      ergo => listingCardWidth: 360px
+
+     * flex-basis: calc((100%/columnCount) - (guttersBetweenColumns / columnCount))
+     */
+
+    flex-basis: calc(16.67% - 12px);
     margin-right: 24px;
   }
 }
@@ -67,14 +121,20 @@
  * Here we take margin-right away, but we don't want it affect the next column breakpoint.
  */
 
-.listingCard:nth-of-type(2n) {
+.listingCard:nth-of-type(3n) {
   @media screen and (min-width: 1024px) and (max-width: 1920px) {
     margin-right: 0;
   }
 }
 
-.listingCard:nth-of-type(3n) {
+.listingCard:nth-of-type(5n) {
   @media (--viewportXLarge) {
+    margin-right: 0;
+  }
+}
+
+.listingCardWithoutMap:nth-of-type(5n) {
+  @media (--viewportMLarge) {
     margin-right: 0;
   }
 }

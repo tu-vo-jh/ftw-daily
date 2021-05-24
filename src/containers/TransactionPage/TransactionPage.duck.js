@@ -12,6 +12,9 @@ import {
   txIsInFirstReviewBy,
   TRANSITION_ACCEPT,
   TRANSITION_DECLINE,
+  TRANSITION_CANCEL_BOOKING_BEFORE_ACCEPT,
+  TRANSITION_CANCEL_BY_PROVIDER,
+  TRANSITION_CANCEL_BY_CUSTOMER,
 } from '../../util/transaction';
 import { transactionLineItems } from '../../util/api';
 import * as log from '../../util/log';
@@ -48,6 +51,14 @@ export const DECLINE_SALE_REQUEST = 'app/TransactionPage/DECLINE_SALE_REQUEST';
 export const DECLINE_SALE_SUCCESS = 'app/TransactionPage/DECLINE_SALE_SUCCESS';
 export const DECLINE_SALE_ERROR = 'app/TransactionPage/DECLINE_SALE_ERROR';
 
+export const CANCEL_BEFORE_ACCEPT_REQUEST = 'app/TransactionPage/CANCEL_BEFORE_ACCEPT_REQUEST';
+export const CANCEL_BEFORE_ACCEPT_SUCCESS = 'app/TransactionPage/CANCEL_BEFORE_ACCEPT_SUCCESS';
+export const CANCEL_BEFORE_ACCEPT_ERROR = 'app/TransactionPage/CANCEL_BEFORE_ACCEPT_ERROR';
+
+export const CANCEL_SALE_REQUEST = 'app/TransactionPage/CANCEL_SALE_REQUEST';
+export const CANCEL_SALE_SUCCESS = 'app/TransactionPageCANCELE_SALE_SUCCESS';
+export const CANCEL_SALE_ERROR = 'app/TransactionPage/CANCEL_SALE_ERROR';
+
 export const FETCH_MESSAGES_REQUEST = 'app/TransactionPage/FETCH_MESSAGES_REQUEST';
 export const FETCH_MESSAGES_SUCCESS = 'app/TransactionPage/FETCH_MESSAGES_SUCCESS';
 export const FETCH_MESSAGES_ERROR = 'app/TransactionPage/FETCH_MESSAGES_ERROR';
@@ -78,6 +89,10 @@ const initialState = {
   acceptSaleError: null,
   declineInProgress: false,
   declineSaleError: null,
+  cancelBeforeAcceptInProgress: false,
+  cancelBeforeAcceptError: null,
+  cancelInProgress: false,
+  cancelSaleError: null,
   fetchMessagesInProgress: false,
   fetchMessagesError: null,
   totalMessages: 0,
@@ -146,6 +161,20 @@ export default function checkoutPageReducer(state = initialState, action = {}) {
       return { ...state, declineInProgress: false };
     case DECLINE_SALE_ERROR:
       return { ...state, declineInProgress: false, declineSaleError: payload };
+
+    case CANCEL_BEFORE_ACCEPT_REQUEST:
+      return { ...state, cancelBeforeAcceptInProgress: true, declineSaleError: null, acceptSaleError: null, cancelBeforeAcceptError: null };
+    case CANCEL_BEFORE_ACCEPT_SUCCESS:
+      return { ...state, cancelBeforeAcceptInProgress: false };
+    case CANCEL_BEFORE_ACCEPT_ERROR:
+      return { ...state, cancelBeforeAcceptInProgress: false, cancelBeforeAcceptError: payload };
+
+    case CANCEL_SALE_REQUEST:
+      return { ...state, cancelInProgress: true, declineSaleError: null, acceptSaleError: null, cancelSaleError: null, cancelBeforeAcceptError: null };
+    case CANCEL_SALE_SUCCESS:
+      return { ...state, cancelInProgress: false };
+    case CANCEL_SALE_ERROR:
+      return { ...state, cancelInProgress: false, cancelSaleError: payload };
 
     case FETCH_MESSAGES_REQUEST:
       return { ...state, fetchMessagesInProgress: true, fetchMessagesError: null };
@@ -237,6 +266,14 @@ const acceptSaleError = e => ({ type: ACCEPT_SALE_ERROR, error: true, payload: e
 const declineSaleRequest = () => ({ type: DECLINE_SALE_REQUEST });
 const declineSaleSuccess = () => ({ type: DECLINE_SALE_SUCCESS });
 const declineSaleError = e => ({ type: DECLINE_SALE_ERROR, error: true, payload: e });
+
+const cancelBeforeAcceptRequest = () => ({ type: CANCEL_BEFORE_ACCEPT_REQUEST });
+const cancelBeforeAcceptSuccess = () => ({ type: CANCEL_BEFORE_ACCEPT_SUCCESS });
+const cancelBeforeAcceptError = e => ({ type: CANCEL_BEFORE_ACCEPT_ERROR, error: true, payload: e });
+
+const cancelSaleRequest = () => ({ type: CANCEL_SALE_REQUEST });
+const cancelSaleSuccess = () => ({ type: CANCEL_SALE_SUCCESS });
+const cancelSaleError = e => ({ type: CANCEL_SALE_ERROR, error: true, payload: e });
 
 const fetchMessagesRequest = () => ({ type: FETCH_MESSAGES_REQUEST });
 const fetchMessagesSuccess = (messages, pagination) => ({
@@ -395,6 +432,56 @@ export const declineSale = id => (dispatch, getState, sdk) => {
       throw e;
     });
 };
+
+export const cancelBeforeAccept = id => (dispatch, getState, sdk) => {
+  const curState = getState();
+  if (curState.TransactionPage.cancelBeforeAcceptInProgress) {
+    return Promise.reject(new Error('Transaction already in progress'));
+  }
+  dispatch(cancelBeforeAcceptRequest());
+
+  return sdk.transactions
+    .transition({ id, transition: TRANSITION_CANCEL_BOOKING_BEFORE_ACCEPT, params: {} }, { expand: true })
+    .then(response => {
+      dispatch(addMarketplaceEntities(response));
+      dispatch(cancelBeforeAcceptSuccess());
+      dispatch(fetchCurrentUserNotifications());
+      return response;
+    })
+    .catch(e => {
+      dispatch(cancelBeforeAcceptError(storableError(e)));
+      log.error(e, 'cancel-before-accept-failed', {
+        txId: id,
+        transition: TRANSITION_CANCEL_BOOKING_BEFORE_ACCEPT,
+      });
+      throw e;
+    });
+}
+
+export const cancelSale = (id, isCustomer) => (dispatch, getState, sdk) => {
+  const curState = getState();
+  if (curState.TransactionPage.cancelInProgress) {
+    return Promise.reject(new Error('Transaction already in progress'));
+  }
+  dispatch(cancelSaleRequest());
+
+  return sdk.transactions
+    .transition({ id, transition: isCustomer ? TRANSITION_CANCEL_BY_CUSTOMER : TRANSITION_CANCEL_BY_PROVIDER, params: {} }, { expand: true })
+    .then(response => {
+      dispatch(addMarketplaceEntities(response));
+      dispatch(cancelSaleSuccess());
+      dispatch(fetchCurrentUserNotifications());
+      return response;
+    })
+    .catch(e => {
+      dispatch(cancelSaleError(storableError(e)));
+      log.error(e, 'cancel-sale-failed', {
+        txId: id,
+        transition: isCustomer ? TRANSITION_CANCEL_BY_CUSTOMER : TRANSITION_CANCEL_BY_PROVIDER,
+      });
+      throw e;
+    });
+}
 
 const fetchMessages = (txId, page) => (dispatch, getState, sdk) => {
   const paging = { page, per_page: MESSAGES_PAGE_SIZE };

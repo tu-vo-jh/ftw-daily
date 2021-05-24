@@ -29,6 +29,11 @@ export const TRANSITION_CONFIRM_PAYMENT = 'transition/confirm-payment';
 // the transaction will expire automatically.
 export const TRANSITION_EXPIRE_PAYMENT = 'transition/expire-payment';
 
+// If the booking is cancel by customer before accept, the booking will be decline and check time for refund, full refund before 48 hours and no refund after 48 hours
+export const TRANSITION_CANCEL_BOOKING_BEFORE_ACCEPT = 'transition/cancel-booking-before-accept';
+export const TRANSITION_REFUND_WITHIN_48_HOURS = 'transition/refund-within-48-hours';
+export const TRANSITION_NO_REFUND = 'transition/no-refund';
+
 // When the provider accepts or declines a transaction from the
 // SalePage, it is transitioned with the accept or decline transition.
 export const TRANSITION_ACCEPT = 'transition/accept';
@@ -38,7 +43,17 @@ export const TRANSITION_DECLINE = 'transition/decline';
 export const TRANSITION_EXPIRE = 'transition/expire';
 
 // Admin can also cancel the transition.
-export const TRANSITION_CANCEL = 'transition/cancel';
+export const TRANSITION_CANCEL_BY_OPERATOR = 'transition/cancel-by-operator';
+
+// Provider can also cancel the transition at any time, also customer.
+export const TRANSITION_CANCEL_BY_PROVIDER = 'transition/cancel-by-provider';
+export const TRANSITION_CANCEL_BY_CUSTOMER = 'transition/cancel-by-customer';
+
+// Payout
+export const TRANSITION_PAYOUT_NO_REVIEWS = 'transition/payout-no-reviews';
+export const TRANSITION_PAYOUT_WITH_PROVIDER_REVIEWS = 'transition/payout-with-provider-reviews'
+export const TRANSITION_PAYOUT_WITH_CUSTOMER_REVIEWS = 'transition/payout-with-customer-reviews'
+export const TRANSITION_PAYOUT_WITH_ALL_REVIEWS = 'transition/payout-with-all-reviews'
 
 // The backend will mark the transaction completed.
 export const TRANSITION_COMPLETE = 'transition/complete';
@@ -83,10 +98,11 @@ export const TX_TRANSITION_ACTORS = [
  *       in Marketplace API. Only last transitions are passed along transaction object.
  */
 const STATE_INITIAL = 'initial';
-const STATE_ENQUIRY = 'enquiry';
+const STATE_CHECK_FIRST_TIME_BOOKING = 'check-first-time-booking';
 const STATE_PENDING_PAYMENT = 'pending-payment';
 const STATE_PAYMENT_EXPIRED = 'payment-expired';
 const STATE_PREAUTHORIZED = 'preauthorized';
+const STATE_CANCEL_BY_CUSTOMER = 'cancel-by-customer';
 const STATE_DECLINED = 'declined';
 const STATE_ACCEPTED = 'accepted';
 const STATE_CANCELED = 'canceled';
@@ -108,7 +124,7 @@ const stateDescription = {
   // id is defined only to support Xstate format.
   // However if you have multiple transaction processes defined,
   // it is best to keep them in sync with transaction process aliases.
-  id: 'flex-default-process/release-1',
+  id: 'tu-default-process/release-1',
 
   // This 'initial' state is a starting point for new transaction
   initial: STATE_INITIAL,
@@ -117,11 +133,11 @@ const stateDescription = {
   states: {
     [STATE_INITIAL]: {
       on: {
-        [TRANSITION_ENQUIRE]: STATE_ENQUIRY,
+        [TRANSITION_ENQUIRE]: STATE_CHECK_FIRST_TIME_BOOKING,
         [TRANSITION_REQUEST_PAYMENT]: STATE_PENDING_PAYMENT,
       },
     },
-    [STATE_ENQUIRY]: {
+    [STATE_CHECK_FIRST_TIME_BOOKING]: {
       on: {
         [TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY]: STATE_PENDING_PAYMENT,
       },
@@ -137,16 +153,26 @@ const stateDescription = {
     [STATE_PAYMENT_EXPIRED]: {},
     [STATE_PREAUTHORIZED]: {
       on: {
+        [TRANSITION_CANCEL_BOOKING_BEFORE_ACCEPT]: STATE_CANCEL_BY_CUSTOMER,
         [TRANSITION_DECLINE]: STATE_DECLINED,
         [TRANSITION_EXPIRE]: STATE_DECLINED,
         [TRANSITION_ACCEPT]: STATE_ACCEPTED,
       },
     },
 
+    [STATE_CANCEL_BY_CUSTOMER]: {
+      on: {
+        [TRANSITION_REFUND_WITHIN_48_HOURS]: STATE_DECLINED,
+        [TRANSITION_NO_REFUND]: STATE_DECLINED,
+      }
+    },
+
     [STATE_DECLINED]: {},
     [STATE_ACCEPTED]: {
       on: {
-        [TRANSITION_CANCEL]: STATE_CANCELED,
+        [TRANSITION_CANCEL_BY_OPERATOR]: STATE_CANCELED,
+        [TRANSITION_CANCEL_BY_PROVIDER]: STATE_CANCELED,
+        [TRANSITION_CANCEL_BY_CUSTOMER]: STATE_CANCEL_BY_CUSTOMER,
         [TRANSITION_COMPLETE]: STATE_DELIVERED,
       },
     },
@@ -157,6 +183,7 @@ const stateDescription = {
         [TRANSITION_EXPIRE_REVIEW_PERIOD]: STATE_REVIEWED,
         [TRANSITION_REVIEW_1_BY_CUSTOMER]: STATE_REVIEWED_BY_CUSTOMER,
         [TRANSITION_REVIEW_1_BY_PROVIDER]: STATE_REVIEWED_BY_PROVIDER,
+        [TRANSITION_PAYOUT_NO_REVIEWS]: STATE_DELIVERED
       },
     },
 
@@ -164,15 +191,22 @@ const stateDescription = {
       on: {
         [TRANSITION_REVIEW_2_BY_PROVIDER]: STATE_REVIEWED,
         [TRANSITION_EXPIRE_PROVIDER_REVIEW_PERIOD]: STATE_REVIEWED,
+        [TRANSITION_PAYOUT_WITH_CUSTOMER_REVIEWS]: STATE_REVIEWED_BY_CUSTOMER
       },
     },
     [STATE_REVIEWED_BY_PROVIDER]: {
       on: {
         [TRANSITION_REVIEW_2_BY_CUSTOMER]: STATE_REVIEWED,
         [TRANSITION_EXPIRE_CUSTOMER_REVIEW_PERIOD]: STATE_REVIEWED,
+        [TRANSITION_PAYOUT_WITH_PROVIDER_REVIEWS]: STATE_REVIEWED_BY_PROVIDER
       },
     },
-    [STATE_REVIEWED]: { type: 'final' },
+    [STATE_REVIEWED]: {
+      on: {
+        [TRANSITION_PAYOUT_WITH_ALL_REVIEWS]: STATE_REVIEWED
+      },
+      type: 'final'
+    },
   },
 };
 
@@ -221,7 +255,7 @@ export const transitionsToRequested = getTransitionsToState(STATE_PREAUTHORIZED)
 const txLastTransition = tx => ensureTransaction(tx).attributes.lastTransition;
 
 export const txIsEnquired = tx =>
-  getTransitionsToState(STATE_ENQUIRY).includes(txLastTransition(tx));
+  getTransitionsToState(STATE_CHECK_FIRST_TIME_BOOKING).includes(txLastTransition(tx));
 
 export const txIsPaymentPending = tx =>
   getTransitionsToState(STATE_PENDING_PAYMENT).includes(txLastTransition(tx));
@@ -245,6 +279,9 @@ export const txIsCanceled = tx =>
 
 export const txIsDelivered = tx =>
   getTransitionsToState(STATE_DELIVERED).includes(txLastTransition(tx));
+
+export const txIsCanceledByCustomer = tx =>
+  getTransitionsToState(STATE_CANCEL_BY_CUSTOMER).includes(txLastTransition(tx));
 
 const firstReviewTransitions = [
   ...getTransitionsToState(STATE_REVIEWED_BY_CUSTOMER),
@@ -299,7 +336,7 @@ export const getReview2Transition = isCustomer =>
 export const isRelevantPastTransition = transition => {
   return [
     TRANSITION_ACCEPT,
-    TRANSITION_CANCEL,
+    TRANSITION_CANCEL_BY_OPERATOR,
     TRANSITION_COMPLETE,
     TRANSITION_CONFIRM_PAYMENT,
     TRANSITION_DECLINE,
@@ -308,6 +345,9 @@ export const isRelevantPastTransition = transition => {
     TRANSITION_REVIEW_1_BY_PROVIDER,
     TRANSITION_REVIEW_2_BY_CUSTOMER,
     TRANSITION_REVIEW_2_BY_PROVIDER,
+    TRANSITION_CANCEL_BOOKING_BEFORE_ACCEPT,
+    TRANSITION_CANCEL_BY_PROVIDER,
+    TRANSITION_CANCEL_BY_CUSTOMER
   ].includes(transition);
 };
 

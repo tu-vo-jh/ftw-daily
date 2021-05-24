@@ -15,10 +15,12 @@ const AuthenticationPage = loadable(() => import(/* webpackChunkName: "Authentic
 const CheckoutPage = loadable(() => import(/* webpackChunkName: "CheckoutPage" */ './containers/CheckoutPage/CheckoutPage'));
 const ContactDetailsPage = loadable(() => import(/* webpackChunkName: "ContactDetailsPage" */ './containers/ContactDetailsPage/ContactDetailsPage'));
 const EditListingPage = loadable(() => import(/* webpackChunkName: "EditListingPage" */ './containers/EditListingPage/EditListingPage'));
+const EditTeacherListingPage = loadable(() => import(/* webpackChunkName: "EditTeacherListingPage" */ './containers/EditTeacherListingPage/EditTeacherListingPage'));
 const EmailVerificationPage = loadable(() => import(/* webpackChunkName: "EmailVerificationPage" */ './containers/EmailVerificationPage/EmailVerificationPage'));
 const InboxPage = loadable(() => import(/* webpackChunkName: "InboxPage" */ './containers/InboxPage/InboxPage'));
 const LandingPage = loadable(() => import(/* webpackChunkName: "LandingPage" */ './containers/LandingPage/LandingPage'));
 const ListingPage = loadable(() => import(/* webpackChunkName: "ListingPage" */ /* webpackPrefetch: true */ './containers/ListingPage/ListingPage'));
+const TeacherListingPage = loadable(() => import(/* webpackChunkName: "TeacherListingPage" */ /* webpackPrefetch: true */ './containers/TeacherListingPage/TeacherListingPage'));
 const ManageListingsPage = loadable(() => import(/* webpackChunkName: "ManageListingsPage" */ './containers/ManageListingsPage/ManageListingsPage'));
 const PasswordChangePage = loadable(() => import(/* webpackChunkName: "PasswordChangePage" */ './containers/PasswordChangePage/PasswordChangePage'));
 const PasswordRecoveryPage = loadable(() => import(/* webpackChunkName: "PasswordRecoveryPage" */ './containers/PasswordRecoveryPage/PasswordRecoveryPage'));
@@ -86,6 +88,12 @@ const routeConfiguration = () => {
       loadData: pageDataLoadingAPI.ListingPage.loadData,
     },
     {
+      path: '/l/teacher/:slug/:id',
+      name: 'TeacherListingPage',
+      component: TeacherListingPage,
+      loadData: pageDataLoadingAPI.TeacherListingPage.loadData,
+    },
+    {
       path: '/l/:slug/:id/checkout',
       name: 'CheckoutPage',
       auth: true,
@@ -117,6 +125,31 @@ const routeConfiguration = () => {
       auth: true,
       component: EditListingPage,
       loadData: pageDataLoadingAPI.EditListingPage.loadData,
+    },
+    {
+      path: '/l/newTeacher',
+      name: 'NewTeacherListingPage',
+      auth: true,
+      component: () => (
+        <NamedRedirect
+          name="EditTeacherListingPage"
+          params={{ slug: draftSlug, id: draftId, type: 'new', tab: 'general' }}
+        />
+      ),
+    },
+    {
+      path: '/l/teacher/:slug/:id/:type/:tab',
+      name: 'EditTeacherListingPage',
+      auth: true,
+      component: EditTeacherListingPage,
+      loadData: pageDataLoadingAPI.EditTeacherListingPage.loadData,
+    },
+    {
+      path: '/l/teacher/:slug/:id/:type/:tab/:returnURLType',
+      name: 'EditTeacherListingStripeOnboardingPage',
+      auth: true,
+      component: EditTeacherListingPage,
+      loadData: pageDataLoadingAPI.EditTeacherListingPage.loadData,
     },
     {
       path: '/l/:slug/:id/:type/:tab/:returnURLType',
@@ -331,7 +364,7 @@ const routeConfiguration = () => {
     {
       path: '/reset-password',
       name: 'PasswordResetPage',
-      component: PasswordResetPage ,
+      component: PasswordResetPage,
     },
 
     // Do not change this path!

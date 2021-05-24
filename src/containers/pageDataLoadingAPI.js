@@ -4,6 +4,7 @@
 import { setInitialValues as CheckoutPageInitialValues } from './CheckoutPage/CheckoutPage.duck';
 import { loadData as ContactDetailsPageLoader } from './ContactDetailsPage/ContactDetailsPage.duck';
 import { loadData as EditListingPageLoader } from './EditListingPage/EditListingPage.duck';
+import { loadData as EditTeacherListingPageLoader } from './EditTeacherListingPage/EditTeacherListingPage.duck';
 import { loadData as EmailVerificationPageLoader } from './EmailVerificationPage/EmailVerificationPage.duck';
 import { loadData as InboxPageLoader } from './InboxPage/InboxPage.duck';
 import { loadData as ListingPageLoader } from './ListingPage/ListingPage.duck';
@@ -12,6 +13,7 @@ import { loadData as PaymentMethodsPageLoader } from './PaymentMethodsPage/Payme
 import { loadData as ProfilePageLoader } from './ProfilePage/ProfilePage.duck';
 import { loadData as SearchPageLoader } from './SearchPage/SearchPage.duck';
 import { loadData as StripePayoutPageLoader } from './StripePayoutPage/StripePayoutPage.duck';
+import { loadData as TeacherListingPageLoader } from './TeacherListingPage/TeacherListingPage.duck';
 import {
   loadData as TransactionPageLoader,
   setInitialValues as TransactionPageInitialValues,
@@ -28,6 +30,9 @@ const getPageDataLoadingAPI = () => {
     EditListingPage: {
       loadData: EditListingPageLoader,
     },
+    EditTeacherListingPage: {
+      loadData: EditTeacherListingPageLoader
+    },
     EmailVerificationPage: {
       loadData: EmailVerificationPageLoader,
     },
@@ -36,6 +41,9 @@ const getPageDataLoadingAPI = () => {
     },
     ListingPage: {
       loadData: ListingPageLoader,
+    },
+    TeacherListingPage: {
+      loadData: TeacherListingPageLoader,
     },
     ManageListingsPage: {
       loadData: ManageListingsPageLoader,

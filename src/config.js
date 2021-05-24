@@ -32,7 +32,7 @@ const sortSearchByDistance = false;
 //
 // In a way, 'processAlias' defines which transaction process (or processes)
 // this particular web application is able to handle.
-const bookingProcessAlias = 'flex-default-process/release-1';
+const bookingProcessAlias = 'tu-default-process/release-1';
 
 // The transaction line item code for the main unit type in bookings.
 //
@@ -139,7 +139,7 @@ const maps = {
     // Limit location autocomplete to a one or more countries
     // using ISO 3166 alpha 2 country codes separated by commas.
     // If you want to limit the autocomplete, uncomment this value:
-    // countryLimit: ['AU'],
+    countryLimit: ['FI', 'VN', 'SG'],
   },
 
   // When fuzzy locations are enabled, coordinates on maps are

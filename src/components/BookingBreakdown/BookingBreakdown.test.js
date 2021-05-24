@@ -4,7 +4,7 @@ import { fakeIntl, createBooking } from '../../util/test-data';
 import { renderDeep } from '../../util/test-helpers';
 import { types as sdkTypes } from '../../util/sdkLoader';
 import {
-  TRANSITION_CANCEL,
+  TRANSITION_CANCEL_BY_OPERATOR,
   TRANSITION_REQUEST_PAYMENT,
   TX_TRANSITION_ACTOR_CUSTOMER,
   DATE_TYPE_DATE,
@@ -141,7 +141,7 @@ describe('BookingBreakdown', () => {
         unitType={LINE_ITEM_NIGHT}
         dateType={DATE_TYPE_DATE}
         transaction={exampleTransaction({
-          lastTransition: TRANSITION_CANCEL,
+          lastTransition: TRANSITION_CANCEL_BY_OPERATOR,
           payinTotal: new Money(0, 'USD'),
           payoutTotal: new Money(0, 'USD'),
           lineItems: [

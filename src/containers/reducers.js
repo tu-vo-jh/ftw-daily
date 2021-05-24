@@ -6,6 +6,7 @@
 import CheckoutPage from './CheckoutPage/CheckoutPage.duck';
 import ContactDetailsPage from './ContactDetailsPage/ContactDetailsPage.duck';
 import EditListingPage from './EditListingPage/EditListingPage.duck';
+import EditTeacherListingPage from './EditTeacherListingPage/EditTeacherListingPage.duck';
 import InboxPage from './InboxPage/InboxPage.duck';
 import ListingPage from './ListingPage/ListingPage.duck';
 import ManageListingsPage from './ManageListingsPage/ManageListingsPage.duck';
@@ -18,11 +19,13 @@ import ProfileSettingsPage from './ProfileSettingsPage/ProfileSettingsPage.duck'
 import SearchPage from './SearchPage/SearchPage.duck';
 import StripePayoutPage from './StripePayoutPage/StripePayoutPage.duck';
 import TransactionPage from './TransactionPage/TransactionPage.duck';
+import TeacherListingPage from './TeacherListingPage/TeacherListingPage.duck';
 
 export {
   CheckoutPage,
   ContactDetailsPage,
   EditListingPage,
+  EditTeacherListingPage,
   InboxPage,
   ListingPage,
   ManageListingsPage,
@@ -35,4 +38,5 @@ export {
   SearchPage,
   StripePayoutPage,
   TransactionPage,
+  TeacherListingPage,
 };

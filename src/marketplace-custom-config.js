@@ -143,6 +143,71 @@ export const filters = [
       ],
     },
   },
+  {
+    id: 'subjects',
+    label: 'Subjects',
+    type: 'SelectMultipleFilter',
+    group: 'secondary',
+    queryParamNames: ['pub_subjects'],
+    config: {
+      searchMode: 'has_all',
+      options: [
+        {
+          key: 'math',
+          label: 'Math',
+        },
+        {
+          key: 'physics',
+          label: 'Physics',
+        },
+        {
+          key: 'chemistry',
+          label: 'Chemistry',
+        }
+      ]
+    }
+  },
+  {
+    id: 'levels',
+    label: 'Levels',
+    type: 'SelectMultipleFilter',
+    group: 'secondary',
+    queryParamNames: ['pub_levels'],
+    config: {
+      searchMode: 'has_all',
+      options: [
+        {
+          key: 'beginner',
+          label: 'Beginner',
+        },
+        {
+          key: 'intermediate',
+          label: 'Intermediate',
+        },
+        {
+          key: 'expert',
+          label: 'Expert',
+        }
+      ]
+    }
+  },
+  {
+    id: 'teachType',
+    label: 'Teach Type',
+    type: 'SelectSingleFilter',
+    group: 'secondary',
+    queryParamNames: ['pub_teach_type'],
+    config: {
+      // "key" is the option you see in Flex Console.
+      // "label" is set here for the UI only.
+      // Note: label is not added through the translation files
+      // to make filter customizations a bit easier.
+      options: [
+        { key: 'full', label: 'Full time' },
+        { key: 'custom', label: 'Part time' }
+      ],
+    },
+  }
 ];
 
 export const sortConfig = {

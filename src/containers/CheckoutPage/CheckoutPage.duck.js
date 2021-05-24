@@ -10,7 +10,7 @@ import {
   isPrivileged,
 } from '../../util/transaction';
 import * as log from '../../util/log';
-import { fetchCurrentUserHasOrdersSuccess, fetchCurrentUser } from '../../ducks/user.duck';
+import { fetchCurrentUserHasOrdersSuccess, fetchCurrentUser, currentUserShowSuccess } from '../../ducks/user.duck';
 
 // ================ Action types ================ //
 
@@ -179,15 +179,15 @@ export const initiateOrder = (orderParams, transactionId) => (dispatch, getState
 
   const bodyParams = isTransition
     ? {
-        id: transactionId,
-        transition,
-        params: orderParams,
-      }
+      id: transactionId,
+      transition,
+      params: orderParams,
+    }
     : {
-        processAlias: config.bookingProcessAlias,
-        transition,
-        params: orderParams,
-      };
+      processAlias: config.bookingProcessAlias,
+      transition,
+      params: orderParams,
+    };
   const queryParams = {
     include: ['booking', 'provider'],
     expand: true,
@@ -196,6 +196,7 @@ export const initiateOrder = (orderParams, transactionId) => (dispatch, getState
   const handleSucces = response => {
     const entities = denormalisedResponseEntities(response);
     const order = entities[0];
+
     dispatch(initiateOrderSuccess(order));
     dispatch(fetchCurrentUserHasOrdersSuccess(true));
     return order;
@@ -252,6 +253,9 @@ export const confirmPayment = orderParams => (dispatch, getState, sdk) => {
     .then(response => {
       const order = response.data.data;
       dispatch(confirmPaymentSuccess(order.id));
+
+
+
       return order;
     })
     .catch(e => {
@@ -321,15 +325,15 @@ export const speculateTransaction = (orderParams, transactionId) => (dispatch, g
 
   const bodyParams = isTransition
     ? {
-        id: transactionId,
-        transition,
-        params,
-      }
+      id: transactionId,
+      transition,
+      params,
+    }
     : {
-        processAlias: config.bookingProcessAlias,
-        transition,
-        params,
-      };
+      processAlias: config.bookingProcessAlias,
+      transition,
+      params,
+    };
 
   const queryParams = {
     include: ['booking', 'provider'],

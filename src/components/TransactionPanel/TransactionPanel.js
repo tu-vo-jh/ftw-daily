@@ -11,9 +11,10 @@ import {
   txIsPaymentExpired,
   txIsPaymentPending,
   txIsRequested,
+  txIsCanceledByCustomer,
   txHasBeenDelivered,
 } from '../../util/transaction';
-import { LINE_ITEM_NIGHT, LINE_ITEM_DAY, propTypes } from '../../util/types';
+import { LINE_ITEM_NIGHT, LINE_ITEM_DAY, propTypes, LINE_ITEM_HOUR } from '../../util/types';
 import {
   ensureListing,
   ensureTransaction,
@@ -28,6 +29,7 @@ import {
   NamedLink,
   ReviewModal,
   UserDisplayName,
+  SecondaryButton
 } from '../../components';
 import { SendMessageForm } from '../../forms';
 import config from '../../config';
@@ -183,10 +185,16 @@ export class TransactionPanelComponent extends Component {
       intl,
       onAcceptSale,
       onDeclineSale,
+      onCancelBeforeAccept,
+      onCancelSale,
       acceptInProgress,
       declineInProgress,
+      cancelBeforeAcceptInProgress,
+      cancelInProgress,
       acceptSaleError,
       declineSaleError,
+      cancelBeforeAcceptError,
+      cancelSaleError,
       onSubmitBookingRequest,
       timeSlots,
       fetchTimeSlotsError,
@@ -217,8 +225,8 @@ export class TransactionPanelComponent extends Component {
       if (txIsEnquired(tx)) {
         const transitions = Array.isArray(nextTransitions)
           ? nextTransitions.map(transition => {
-              return transition.attributes.name;
-            })
+            return transition.attributes.name;
+          })
           : [];
         const hasCorrectNextTransition =
           transitions.length > 0 && transitions.includes(TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY);
@@ -241,18 +249,25 @@ export class TransactionPanelComponent extends Component {
           headingState: HEADING_REQUESTED,
           showDetailCardHeadings: isCustomer,
           showSaleButtons: isProvider && !isCustomerBanned,
+          showCancelBeforeAcceptButton: isCustomer
         };
       } else if (txIsAccepted(tx)) {
         return {
           headingState: HEADING_ACCEPTED,
           showDetailCardHeadings: isCustomer,
           showAddress: isCustomer,
+          showCancelButton: true
         };
       } else if (txIsDeclined(tx)) {
         return {
           headingState: HEADING_DECLINED,
           showDetailCardHeadings: isCustomer,
         };
+      } else if (txIsCanceledByCustomer(tx)) {
+        return {
+          headingState: HEADING_CANCELED,
+          showDetailCardHeadings: isCustomer
+        }
       } else if (txIsCanceled(tx)) {
         return {
           headingState: HEADING_CANCELED,
@@ -290,12 +305,14 @@ export class TransactionPanelComponent extends Component {
     const unitType = config.bookingUnitType;
     const isNightly = unitType === LINE_ITEM_NIGHT;
     const isDaily = unitType === LINE_ITEM_DAY;
-
+    const isHourly = unitType === LINE_ITEM_HOUR;
     const unitTranslationKey = isNightly
       ? 'TransactionPanel.perNight'
       : isDaily
-      ? 'TransactionPanel.perDay'
-      : 'TransactionPanel.perUnit';
+        ? 'TransactionPanel.perDay'
+        : isHourly
+          ? 'TransactionPanel.perHour'
+          : 'TransactionPanel.perUnit';
 
     const price = currentListing.attributes.price;
     const bookingSubTitle = price
@@ -336,7 +353,7 @@ export class TransactionPanelComponent extends Component {
     );
 
     const classes = classNames(rootClassName || css.root, className);
-
+    const buttonsDisabled = cancelBeforeAcceptInProgress || cancelInProgress;
     return (
       <div className={classes}>
         <div className={css.container}>
@@ -463,6 +480,36 @@ export class TransactionPanelComponent extends Component {
               {stateData.showSaleButtons ? (
                 <div className={css.desktopActionButtons}>{saleButtons}</div>
               ) : null}
+              {stateData.showCancelBeforeAcceptButton ? (
+                <div className={css.desktopActionButtons}>
+                  <div className={css.actionButtons}>
+                    <div className={css.actionButtonWrapper}>
+                      <SecondaryButton
+                        inProgress={cancelBeforeAcceptInProgress}
+                        disabled={buttonsDisabled}
+                        onClick={() => onCancelBeforeAccept(currentTransaction.id)}
+                      >
+                        <FormattedMessage id="TransactionPanel.cancelBeforeAcceptButton" />
+                      </SecondaryButton>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+              {stateData.showCancelButton ? (
+                <div className={css.desktopActionButtons}>
+                  <div className={css.actionButtons}>
+                    <div className={css.actionButtonWrapper}>
+                      <SecondaryButton
+                        inProgress={cancelInProgress}
+                        disabled={buttonsDisabled}
+                        onClick={() => onCancelSale(currentTransaction.id, isCustomer)}
+                      >
+                        <FormattedMessage id="TransactionPanel.cancelBeforeAcceptButton" />
+                      </SecondaryButton>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
@@ -488,6 +535,7 @@ TransactionPanelComponent.defaultProps = {
   currentUser: null,
   acceptSaleError: null,
   declineSaleError: null,
+  cancelBeforeAcceptError: null,
   fetchMessagesError: null,
   initialMessageFailed: false,
   savePaymentMethodFailed: false,
@@ -529,10 +577,13 @@ TransactionPanelComponent.propTypes = {
   // Sale related props
   onAcceptSale: func.isRequired,
   onDeclineSale: func.isRequired,
+  onCancelBeforeAccept: func.isRequired,
   acceptInProgress: bool.isRequired,
   declineInProgress: bool.isRequired,
+  cancelBeforeAcceptInProgress: bool.isRequired,
   acceptSaleError: propTypes.error,
   declineSaleError: propTypes.error,
+  cancelBeforeAcceptError: propTypes.error,
 
   // line items
   onFetchTransactionLineItems: func.isRequired,

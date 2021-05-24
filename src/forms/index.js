@@ -1,4 +1,5 @@
 export { default as BookingDatesForm } from './BookingDatesForm/BookingDatesForm';
+export { default as TeacherBookingDatesForm } from './TeacherBookingDatesForm/TeacherBookingDatesForm';
 export { default as ContactDetailsForm } from './ContactDetailsForm/ContactDetailsForm';
 export { default as ConfirmSignupForm } from './ConfirmSignupForm/ConfirmSignupForm';
 export { default as EditListingAvailabilityForm } from './EditListingAvailabilityForm/EditListingAvailabilityForm';
@@ -8,6 +9,7 @@ export { default as EditListingLocationForm } from './EditListingLocationForm/Ed
 export { default as EditListingPhotosForm } from './EditListingPhotosForm/EditListingPhotosForm';
 export { default as EditListingPoliciesForm } from './EditListingPoliciesForm/EditListingPoliciesForm';
 export { default as EditListingPricingForm } from './EditListingPricingForm/EditListingPricingForm';
+export { default as EditListingGeneralForm } from './EditListingGeneralForm/EditListingGeneralForm';
 export { default as EmailVerificationForm } from './EmailVerificationForm/EmailVerificationForm';
 export { default as EnquiryForm } from './EnquiryForm/EnquiryForm';
 export { default as FilterForm } from './FilterForm/FilterForm';

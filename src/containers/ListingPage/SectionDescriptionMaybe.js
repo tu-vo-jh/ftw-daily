@@ -7,11 +7,11 @@ import css from './ListingPage.module.css';
 const MIN_LENGTH_FOR_LONG_WORDS_IN_DESCRIPTION = 20;
 
 const SectionDescriptionMaybe = props => {
-  const { description } = props;
+  const { description, isTeacher } = props;
   return description ? (
     <div className={css.sectionDescription}>
       <h2 className={css.descriptionTitle}>
-        <FormattedMessage id="ListingPage.descriptionTitle" />
+        <FormattedMessage id={isTeacher ? "TeacherListingPage.descriptionTitle" : "ListingPage.descriptionTitle"} />
       </h2>
       <p className={css.description}>
         {richText(description, {
