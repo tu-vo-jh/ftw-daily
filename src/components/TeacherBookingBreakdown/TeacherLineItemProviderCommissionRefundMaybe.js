@@ -15,7 +15,7 @@ const TeacherLineItemProviderCommissionRefundMaybe = props => {
     return isProvider && refund ? (
         <div className={css.lineItem}>
             <span className={css.itemLabel}>
-                <FormattedMessage id="BookingBreakdown.refundProviderFee" />
+                <FormattedMessage id="TeacherBookingBreakdown.refundProviderFee" />
             </span>
             <span className={css.itemValue}>{formatMoney(intl, refund.lineTotal)}</span>
         </div>

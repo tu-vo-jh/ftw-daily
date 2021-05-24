@@ -5,8 +5,8 @@ import { Form as FinalForm, FormSpy } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
 import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
-import { propTypes } from '../../util/types';
-import { maxLength, required, composeValidators } from '../../util/validators';
+import { ERROR_CODE_TRANSACTION_ALREADY_REVIEWED_BY_CUSTOMER, propTypes } from '../../util/types';
+import { maxLength, required, composeValidators, requiredFieldArrayCheckbox } from '../../util/validators';
 import { Form, Button, FieldTextInput, FieldCheckboxGroup, FieldSelect } from '../../components';
 
 import css from './EditListingGeneralForm.module.css';
@@ -48,7 +48,6 @@ const EditListingGeneralFormComponent = props => (
                     maxLength: TITLE_MAX_LENGTH,
                 }
             );
-
             const descriptionMessage = intl.formatMessage({
                 id: 'EditListingGeneralForm.description',
             });
@@ -59,7 +58,6 @@ const EditListingGeneralFormComponent = props => (
             const descriptionRequiredMessage = intl.formatMessage({
                 id: 'EditListingGeneralForm.descriptionRequired',
             });
-
             const numberOfHoursMessage = intl.formatMessage({
                 id: 'EditListingGeneralForm.numberOfHours',
             });
@@ -68,6 +66,15 @@ const EditListingGeneralFormComponent = props => (
             });
             const numberOfHoursRequiredMessage = intl.formatMessage({
                 id: 'EditListingGeneralForm.numberOfHoursRequired',
+            });
+            const subjectsRequiredMessage = intl.formatMessage({
+                id: 'EditListingGeneralForm.subjectsRequiredMessage'
+            });
+            const levelsRequiredMessage = intl.formatMessage({
+                id: 'EditListingGeneralForm.levelsRequiredMessage'
+            });
+            const teacherTypeRequiredMessage = intl.formatMessage({
+                id: 'EditListingGeneralForm.teacherTypeRequiredMessage'
             });
 
             const { updateListingError, createListingDraftError, showListingsError } = fetchErrors || {};
@@ -133,16 +140,17 @@ const EditListingGeneralFormComponent = props => (
                     />
 
                     <label htmlFor="subjects">{subjectMessage}</label>
-                    <FieldCheckboxGroup className={css.subjects} id="subjects" name="subjects" options={subjects} />
+                    <FieldCheckboxGroup className={css.subjects} id="subjects" name="subjects" options={subjects} validate={requiredFieldArrayCheckbox(subjectsRequiredMessage)} />
 
                     <label htmlFor="levels">{levelMessage}</label>
-                    <FieldCheckboxGroup className={css.levels} id="levels" name="levels" options={levels} />
+                    <FieldCheckboxGroup className={css.levels} id="levels" name="levels" options={levels} validate={requiredFieldArrayCheckbox(levelsRequiredMessage)} />
 
                     <FieldSelect
                         className={css.types}
                         name="types"
                         id="types"
-                        label={typeLabel}>
+                        label={typeLabel}
+                        validate={composeValidators(required(teacherTypeRequiredMessage))}>
                         <option disabled value="">
                             {typePlaceholder}
                         </option>

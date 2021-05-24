@@ -1092,6 +1092,9 @@
   "EditListingGeneralForm.numberOfHours": "Number of hours",
   "EditListingGeneralForm.numberOfHoursPlaceholder": "Number of hours per day",
   "EditListingGeneralForm.numberOfHoursRequired": "You need to add number of hours",
+  "EditListingGeneralForm.subjectsRequiredMessage": "You need to choose subjects",
+  "EditListingGeneralForm.levelsRequiredMessage": "You need to choose levels",
+  "EditListingGeneralForm.teacherTypeRequiredMessage": "You need to choose teacher type",
   "EditTeacherListingPage.loadingListingData": "Loading listing data…",
   "EditTeacherListingPhotosPanel.mainPhoto": "Main photo",
   "EditTeacherListingPhotosPanel.otherPhotos": "Other photos",
@@ -1108,5 +1111,8 @@
   "TeacherBookingDatesForm.startTimePlaceholder": "Start time",
   "TeacherBookingDatesForm.endTimeLabel": "To",
   "TeacherBookingDatesForm.endTimePlaceholder": "End time",
-  "TeacherBookingBreakdown.commissionFeeNote": "* The fee helps us run the platform and provide the best possible service to you!"
+  "TeacherBookingBreakdown.commission": "Teacher fee *",
+  "TeacherBookingBreakdown.commissionFeeNote": "* The fee helps us run the platform and provide the best possible service to you!",
+  "TeacherBookingBreakdown.refundProviderFee": "Refund teacher fee",
+  "TeacherBookingBreakdown.customerCommission": "Fee"
 }

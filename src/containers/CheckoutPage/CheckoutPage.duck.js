@@ -196,6 +196,7 @@ export const initiateOrder = (orderParams, transactionId) => (dispatch, getState
   const handleSucces = response => {
     const entities = denormalisedResponseEntities(response);
     const order = entities[0];
+
     dispatch(initiateOrderSuccess(order));
     dispatch(fetchCurrentUserHasOrdersSuccess(true));
     return order;
@@ -212,29 +213,6 @@ export const initiateOrder = (orderParams, transactionId) => (dispatch, getState
     });
     throw e;
   };
-
-  sdk.currentUser
-    .updateProfile(
-      { protectedData: { fistTimeBooking: transactionId ? transactionId.uuid : null } },
-      {
-        expand: true,
-      }
-    )
-    .then(response => {
-      const entities = denormalisedResponseEntities(response);
-      if (entities.length !== 1) {
-        throw new Error('Expected a resource in the sdk.currentUser.updateProfile response');
-      }
-
-      const currentUser = entities[0];
-      dispatch(currentUserShowSuccess(currentUser));
-    })
-    .catch(e => {
-      dispatch(initiateOrderError(storableError(e)));
-      // pass the same error so that the SAVE_CONTACT_DETAILS_SUCCESS
-      // action will not be fired
-      throw e;
-    });
 
   if (isTransition && isPrivilegedTransition) {
     // transition privileged

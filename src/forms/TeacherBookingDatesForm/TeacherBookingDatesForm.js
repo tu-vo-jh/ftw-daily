@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import moment from 'moment';
 import config from '../../config';
 import { FormattedMessage, intlShape, injectIntl } from '../../util/reactIntl';
-import { required, composeValidators, teacherBookingDatesRequired } from '../../util/validators';
+import { required, composeValidators, bookingDateRequired } from '../../util/validators';
 import { START_DATE, END_DATE } from '../../util/dates';
 import { propTypes } from '../../util/types';
 import { Form, IconSpinner, PrimaryButton, FieldDateInput, FieldSelect } from '../../components';
@@ -14,6 +14,7 @@ import TeacherEstimatedBreakdownMaybe from './TeacherEstimatedBreakdownMaybe';
 import _ from 'lodash';
 
 import css from './TeacherBookingDatesForm.module.css';
+import { getStartTimeOptions } from '../../util/data';
 
 const identity = v => v;
 
@@ -132,19 +133,6 @@ export class TeacherBookingDatesFormComponent extends Component {
                     } = fieldRenderProps;
                     const { date } = values && values.bookingDates ? values.bookingDates : {};
 
-                    const getStartTimeOptions = (hour) => {
-                        const hours = Array.from({ length: 8 }, (_, i) => i + 8);
-
-                        const startTimeBySessionHour = _.reduce(hours, (result, item) => {
-                            if (item >= 8 && item + hour <= 16) {
-                                result.push({ key: item.toString(), label: `${item}:00` });
-                            }
-                            return result;
-                        }, []);
-
-                        return startTimeBySessionHour;
-                    }
-
                     const sessionHour = listing && listing.attributes.publicData.numberOfHours ? +listing.attributes.publicData.numberOfHours : 8;
                     const startTimeOptions = sessionHour === 8 ? [{ key: '8', label: '8:00' }] : getStartTimeOptions(sessionHour);
 
@@ -250,7 +238,7 @@ export class TeacherBookingDatesFormComponent extends Component {
                                 useMobileMargins
                                 validate={composeValidators(
                                     required(requiredMessage),
-                                    teacherBookingDatesRequired(startDateErrorMessage)
+                                    bookingDateRequired(startDateErrorMessage)
                                 )}
                                 disabled={fetchLineItemsInProgress}
                             />

@@ -1,6 +1,7 @@
 import isArray from 'lodash/isArray';
 import reduce from 'lodash/reduce';
 import { sanitizeEntity } from './sanitize';
+import _ from 'lodash';
 
 /**
  * Combine the given relationships objects
@@ -386,3 +387,21 @@ export const humanizeLineItemCode = code => {
 
   return lowercase.charAt(0).toUpperCase() + lowercase.slice(1);
 };
+
+/**
+ * Generate opening hours for customer can select the time they want to book.
+ * @param {hour} hour session hour of teacher
+ * @returns {Array} list of opening hours
+ */
+export const getStartTimeOptions = (hour) => {
+  const hours = Array.from({ length: 8 }, (_, i) => i + 8);
+
+  const startTimeBySessionHour = _.reduce(hours, (result, item) => {
+    if (item >= 8 && item + hour <= 16) {
+      result.push({ key: item.toString(), label: `${item}:00` });
+    }
+    return result;
+  }, []);
+
+  return startTimeBySessionHour;
+}
